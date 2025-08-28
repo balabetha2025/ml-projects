@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score
 from src.exception import CustomException
+from sklearn.model_selection import GridSearchCV
 
 
 def save_object(file_path: str, obj) -> None:
@@ -21,16 +22,17 @@ def save_object(file_path: str, obj) -> None:
         raise CustomException(f"Failed to save object to {file_path}: {e}", sys) from e
     
 
-def evaluate_model(x_train, y_train, x_test, y_test, models: dict) -> dict:
-    """
-    Trains and evaluates multiple models using R2 score.
-    Returns: {model_name: score}
-    """
+def evaluate_model(x_train, y_train, x_test, y_test, models,param):
+   
     try:
         report = {}
 
         for name, model in models.items():
             model.fit(x_train, y_train)
+            para=param[list(models.keys())[i]]
+
+            gs = GridsearchCV(model,para,cv=3,n_jobs=n_jobs,verbose=verbose,refit=refit)
+            gs.fit(x_train,y_train)
 
             y_test_pred = model.predict(x_test)
             test_model_score = r2_score(y_test, y_test_pred)
